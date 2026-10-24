@@ -1,0 +1,28 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://game/level/scatter.gd" id="1_scatter"]
+[ext_resource type="PackedScene" path="res://assets/models/props/props.glb" id="2_props"]
+[ext_resource type="Resource" path="res://assets/models/props/props_scatter.tres" id="3_data"]
+[ext_resource type="Material" path="res://game/level/materials/bark.tres" id="4_bark"]
+[ext_resource type="Material" path="res://game/level/materials/leaf.tres" id="5_leaf"]
+[ext_resource type="Material" path="res://game/level/materials/foliage.tres" id="6_foliage"]
+[ext_resource type="Material" path="res://game/level/materials/plaster.tres" id="7_plaster"]
+[ext_resource type="Material" path="res://game/level/materials/roof.tres" id="8_roof"]
+[ext_resource type="Material" path="res://game/level/materials/thatch.tres" id="9_thatch"]
+[ext_resource type="Material" path="res://game/fort/materials/opening.tres" id="10_opening"]
+[ext_resource type="Material" path="res://game/common/materials/wood.tres" id="11_wood"]
+
+[node name="Scatter" type="Node3D"]
+script = ExtResource("1_scatter")
+props_scene = ExtResource("2_props")
+data = ExtResource("3_data")
+materials = {
+"bark": ExtResource("4_bark"),
+"foliage": ExtResource("6_foliage"),
+"leaf": ExtResource("5_leaf"),
+"opening": ExtResource("10_opening"),
+"plaster": ExtResource("7_plaster"),
+"roof": ExtResource("8_roof"),
+"thatch": ExtResource("9_thatch"),
+"wood": ExtResource("11_wood")
+}

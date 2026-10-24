@@ -1,0 +1,97 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/fire_loop.wav" id="1_crackle"]
+
+[sub_resource type="Gradient" id="Grad_soft"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_soft"]
+gradient = SubResource("Grad_soft")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_flame"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("Tex_soft")
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="Mesh_flame"]
+material = SubResource("Mat_flame")
+size = Vector2(1.1, 1.4)
+
+[sub_resource type="Gradient" id="Grad_flame"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 0.85, 0.45, 0.9, 1, 0.45, 0.1, 0.7, 0.4, 0.1, 0.02, 0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_smoke"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("Tex_soft")
+billboard_mode = 3
+billboard_keep_scale = true
+roughness = 1.0
+
+[sub_resource type="QuadMesh" id="Mesh_smoke"]
+material = SubResource("Mat_smoke")
+size = Vector2(2.2, 2.2)
+
+[sub_resource type="Gradient" id="Grad_smoke"]
+offsets = PackedFloat32Array(0, 0.15, 1)
+colors = PackedColorArray(0.15, 0.13, 0.12, 0, 0.18, 0.16, 0.15, 0.7, 0.35, 0.34, 0.33, 0)
+
+[sub_resource type="Curve" id="Curve_grow"]
+_data = [Vector2(0, 0.4), 0.0, 1.4, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Fire" type="Node3D"]
+
+[node name="Flames" type="CPUParticles3D" parent="."]
+amount = 18
+lifetime = 0.9
+mesh = SubResource("Mesh_flame")
+emission_shape = 1
+emission_sphere_radius = 0.8
+direction = Vector3(0, 1, 0)
+spread = 12.0
+gravity = Vector3(0, 2.5, 0)
+initial_velocity_min = 0.5
+initial_velocity_max = 1.5
+scale_amount_min = 0.7
+scale_amount_max = 1.5
+color_ramp = SubResource("Grad_flame")
+
+[node name="Smoke" type="CPUParticles3D" parent="."]
+amount = 16
+lifetime = 5.0
+mesh = SubResource("Mesh_smoke")
+emission_shape = 1
+emission_sphere_radius = 0.6
+direction = Vector3(0, 1, 0)
+spread = 10.0
+gravity = Vector3(1.0, 1.6, 0.4)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+scale_amount_min = 1.0
+scale_amount_max = 2.2
+scale_amount_curve = SubResource("Curve_grow")
+color_ramp = SubResource("Grad_smoke")
+
+[node name="Light" type="OmniLight3D" parent="."]
+position = Vector3(0, 1, 0)
+light_color = Color(1, 0.55, 0.2, 1)
+light_energy = 2.5
+omni_range = 9.0
+
+[node name="Crackle" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("1_crackle")
+volume_db = -2.0
+unit_size = 14.0
+max_distance = 1500.0
+autoplay = true

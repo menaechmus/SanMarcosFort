@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://game/water/water_surface.gd" id="1_surface"]
+[ext_resource type="Resource" path="res://game/water/bay_waves.tres" id="2_waves"]
+[ext_resource type="Material" path="res://game/water/water_material.tres" id="3_material"]
+
+[node name="WaterSurface" type="Node3D"]
+script = ExtResource("1_surface")
+waves = ExtResource("2_waves")
+material = ExtResource("3_material")

@@ -1,0 +1,25 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/cannon/cannon.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/weapons/cannon.gd" id="2_cannon"]
+[ext_resource type="Resource" path="res://game/weapons/round_shot.tres" id="3_ammo"]
+[ext_resource type="PackedScene" path="res://game/fx/muzzle_flash.tscn" id="4_flash"]
+[ext_resource type="Script" path="res://game/common/material_setter.gd" id="5_setter"]
+[ext_resource type="Material" path="res://game/common/materials/bronze.tres" id="6_bronze"]
+[ext_resource type="Material" path="res://game/common/materials/iron.tres" id="7_iron"]
+[ext_resource type="Material" path="res://game/common/materials/wood.tres" id="8_wood"]
+[ext_resource type="Material" path="res://game/fort/materials/opening.tres" id="9_opening"]
+
+[node name="Cannon" instance=ExtResource("1_model")]
+script = ExtResource("2_cannon")
+ammo = ExtResource("3_ammo")
+muzzle_flash_fx = ExtResource("4_flash")
+
+[node name="Materials" type="Node" parent="."]
+script = ExtResource("5_setter")
+materials = {
+"bronze": ExtResource("6_bronze"),
+"iron": ExtResource("7_iron"),
+"opening": ExtResource("9_opening"),
+"wood": ExtResource("8_wood")
+}

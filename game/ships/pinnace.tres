@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ShipDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/ships/ship_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://game/ships/models/pinnace.tscn" id="2_model"]
+
+[resource]
+script = ExtResource("1_def")
+display_name = "Pinnace"
+model_scene = ExtResource("2_model")
+length = 18.0
+beam = 5.2
+draft = 1.6
+freeboard = 2.3
+mast_height = 13.5
+speed = 7.0
+max_hp = 3.0
+sink_time = 9.0
+wave_response = 3.5
+score = 100
+bounty = 20
+town_damage = 12.0
+guns_per_side = 0
+gun_range = 450.0
+gun_reload = 12.0

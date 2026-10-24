@@ -1,0 +1,16 @@
+# Godot cache and editor state
+.godot/
+*.tmp
+
+# Build output (exports, screenshots, model previews)
+build/
+
+# Downloaded reference images (re-fetch with tools/fetch_habs.py)
+reference/habs/
+
+# Blender backups and Python caches
+*.blend1
+__pycache__/
+
+# Android Gradle build template (reinstall from the editor when needed)
+android/

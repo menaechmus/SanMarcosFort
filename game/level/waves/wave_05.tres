@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="WaveDef" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://game/level/wave_def.gd" id="1_def"]
+[ext_resource type="Script" path="res://game/level/wave_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://game/ships/pinnace.tres" id="3_pinnace"]
+[ext_resource type="Resource" path="res://game/ships/caravel.tres" id="4_caravel"]
+
+[sub_resource type="Resource" id="Entry_0_pinnace"]
+script = ExtResource("2_entry")
+ship = ExtResource("3_pinnace")
+count = 4
+start_delay = 0.0
+interval = 8.0
+lanes = PackedInt32Array()
+speed_multiplier = 1.15
+armed = true
+
+[sub_resource type="Resource" id="Entry_1_caravel"]
+script = ExtResource("2_entry")
+ship = ExtResource("4_caravel")
+count = 3
+start_delay = 12.0
+interval = 14.0
+lanes = PackedInt32Array(1, 2)
+speed_multiplier = 1.0
+armed = true
+
+[resource]
+script = ExtResource("1_def")
+title = "A privateer squadron"
+entries = Array[ExtResource("2_entry")]([SubResource("Entry_0_pinnace"), SubResource("Entry_1_caravel")])

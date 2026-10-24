@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ShipDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/ships/ship_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://game/ships/models/galleon.tscn" id="2_model"]
+
+[resource]
+script = ExtResource("1_def")
+display_name = "Galleon"
+model_scene = ExtResource("2_model")
+length = 40.0
+beam = 10.5
+draft = 3.8
+freeboard = 4.0
+mast_height = 29.0
+speed = 4.4
+max_hp = 14.0
+sink_time = 15.0
+wave_response = 1.6
+score = 600
+bounty = 110
+town_damage = 35.0
+guns_per_side = 17
+gun_range = 500.0
+gun_reload = 11.0

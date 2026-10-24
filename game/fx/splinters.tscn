@@ -1,0 +1,84 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://game/fx/one_shot_fx.gd" id="1_fx"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_wood"]
+vertex_color_use_as_albedo = true
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="Mesh_splinter"]
+material = SubResource("Mat_wood")
+size = Vector3(0.08, 0.06, 0.45)
+
+[sub_resource type="Gradient" id="Grad_soft"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_soft"]
+gradient = SubResource("Grad_soft")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_smoke"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("Tex_soft")
+billboard_mode = 3
+billboard_keep_scale = true
+roughness = 1.0
+
+[sub_resource type="QuadMesh" id="Mesh_smoke"]
+material = SubResource("Mat_smoke")
+size = Vector2(1.8, 1.8)
+
+[sub_resource type="Gradient" id="Grad_smoke"]
+offsets = PackedFloat32Array(0, 0.15, 1)
+colors = PackedColorArray(0.35, 0.3, 0.26, 0, 0.35, 0.3, 0.26, 0.8, 0.4, 0.38, 0.36, 0)
+
+[sub_resource type="Curve" id="Curve_grow"]
+_data = [Vector2(0, 0.4), 0.0, 1.2, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Splinters" type="Node3D"]
+script = ExtResource("1_fx")
+lifetime = 4.0
+
+[node name="Chunks" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 26
+lifetime = 1.8
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("Mesh_splinter")
+particle_flag_align_y = true
+direction = Vector3(0, 1, 0)
+spread = 55.0
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 13.0
+angular_velocity_min = -400.0
+angular_velocity_max = 400.0
+scale_amount_min = 0.5
+scale_amount_max = 1.6
+color = Color(0.5, 0.36, 0.22, 1)
+
+[node name="Smoke" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 14
+lifetime = 2.6
+one_shot = true
+explosiveness = 0.9
+mesh = SubResource("Mesh_smoke")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0.3, 0.6, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 4.0
+damping_min = 1.0
+damping_max = 2.0
+scale_amount_min = 0.8
+scale_amount_max = 1.8
+scale_amount_curve = SubResource("Curve_grow")
+color_ramp = SubResource("Grad_smoke")

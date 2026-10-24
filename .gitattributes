@@ -1,0 +1,19 @@
+# Normalize line endings; Godot writes LF
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.exr binary
+*.hdr binary
+*.glb binary
+*.blend binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+
+# Downloaded license texts stay byte-for-byte (tools/fetch_fonts.py checks their SHA-256)
+assets/fonts/*/OFL.txt -text

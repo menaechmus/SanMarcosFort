@@ -1,0 +1,16 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://game/ships/ship.gd" id="1_ship"]
+[ext_resource type="PackedScene" path="res://game/fx/splinters.tscn" id="2_splinters"]
+[ext_resource type="PackedScene" path="res://game/fx/splash.tscn" id="3_splash"]
+[ext_resource type="PackedScene" path="res://game/fx/fire.tscn" id="4_fire"]
+[ext_resource type="PackedScene" path="res://game/fx/muzzle_flash.tscn" id="5_flash"]
+[ext_resource type="Resource" path="res://game/weapons/enemy_shot.tres" id="6_ammo"]
+
+[node name="Ship" type="Node3D"]
+script = ExtResource("1_ship")
+splinter_fx = ExtResource("2_splinters")
+splash_fx = ExtResource("3_splash")
+fire_fx = ExtResource("4_fire")
+gun_flash_fx = ExtResource("5_flash")
+gun_ammo = ExtResource("6_ammo")

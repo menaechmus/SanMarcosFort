@@ -1,0 +1,182 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://game/level/main_level.gd" id="1_level"]
+[ext_resource type="PackedScene" path="res://game/water/water_surface.tscn" id="2_water"]
+[ext_resource type="PackedScene" path="res://game/fort/fort.tscn" id="3_fort"]
+[ext_resource type="Script" path="res://game/level/ship_lane.gd" id="4_lane"]
+[ext_resource type="Script" path="res://game/weapons/projectile_pool.gd" id="5_pool"]
+[ext_resource type="Script" path="res://game/level/wave_director.gd" id="6_director"]
+[ext_resource type="PackedScene" path="res://game/ships/ship.tscn" id="7_ship"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_01.tres" id="8_wave1"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_02.tres" id="9_wave2"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_03.tres" id="10_wave3"]
+[ext_resource type="PackedScene" path="res://game/player/player.tscn" id="11_player"]
+[ext_resource type="PackedScene" path="res://game/ui/hud.tscn" id="12_hud"]
+[ext_resource type="PackedScene" path="res://game/fx/splash.tscn" id="13_splash"]
+[ext_resource type="PackedScene" path="res://game/fx/dust.tscn" id="14_dust"]
+[ext_resource type="Script" path="res://game/level/wave_def.gd" id="15_wave_def"]
+[ext_resource type="PackedScene" path="res://game/level/terrain.tscn" id="16_terrain"]
+[ext_resource type="Shader" path="res://game/level/sky.gdshader" id="17_sky"]
+[ext_resource type="PackedScene" path="res://game/level/scatter.tscn" id="18_scatter"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_04.tres" id="19_wave4"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_05.tres" id="20_wave5"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_06.tres" id="21_wave6"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_07.tres" id="22_wave7"]
+[ext_resource type="Resource" path="res://game/level/waves/wave_08.tres" id="23_wave8"]
+[ext_resource type="PackedScene" path="res://game/ui/menus.tscn" id="24_menus"]
+
+[sub_resource type="FastNoiseLite" id="Noise_clouds"]
+noise_type = 1
+frequency = 0.006
+fractal_octaves = 5
+fractal_gain = 0.55
+
+[sub_resource type="NoiseTexture2D" id="Tex_clouds"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("Noise_clouds")
+
+[sub_resource type="ShaderMaterial" id="Sky_material"]
+shader = ExtResource("17_sky")
+shader_parameter/zenith_color = Color(0.16, 0.36, 0.72, 1)
+shader_parameter/horizon_color = Color(0.64, 0.75, 0.88, 1)
+shader_parameter/ground_color = Color(0.42, 0.42, 0.38, 1)
+shader_parameter/cloud_color = Color(1, 0.98, 0.95, 1)
+shader_parameter/cloud_shade = Color(0.62, 0.66, 0.74, 1)
+shader_parameter/cloud_noise = SubResource("Tex_clouds")
+shader_parameter/cloud_coverage = 0.52
+shader_parameter/cloud_scale = 0.12
+shader_parameter/sun_size = 0.9994
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("Sky_material")
+radiance_size = 2
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_sky_contribution = 1.0
+reflected_light_source = 2
+tonemap_mode = 2
+tonemap_exposure = 0.9
+tonemap_white = 6.0
+glow_enabled = true
+glow_intensity = 0.35
+glow_bloom = 0.04
+fog_enabled = true
+fog_light_color = Color(0.66, 0.75, 0.86, 1)
+fog_density = 0.00022
+fog_sky_affect = 0.2
+
+[sub_resource type="Curve3D" id="Curve_lane0"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 330, 0, -650, 0, 0, 0, 0, 0, 0, 250, 0, -250, 0, 0, 0, 0, 0, 0, 240, 0, 150, 0, 0, 0, 0, 0, 0, 320, 0, 600),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="Curve3D" id="Curve_lane1"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 520, 0, -700, 0, 0, 0, 0, 0, 0, 440, 0, -200, 0, 0, 0, 0, 0, 0, 450, 0, 250, 0, 0, 0, 0, 0, 0, 540, 0, 650),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="Curve3D" id="Curve_lane2"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 720, 0, -700, 0, 0, 0, 0, 0, 0, 650, 0, 0, 0, 0, 0, 0, 0, 0, 720, 0, 650),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[node name="MainLevel" type="Node3D"]
+script = ExtResource("1_level")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-38, -70, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.2
+shadow_enabled = true
+shadow_bias = 0.15
+shadow_normal_bias = 2.5
+directional_shadow_mode = 1
+directional_shadow_blend_splits = true
+directional_shadow_max_distance = 400.0
+
+[node name="Water" parent="." instance=ExtResource("2_water")]
+
+[node name="Terrain" parent="." instance=ExtResource("16_terrain")]
+
+[node name="Scatter" parent="." instance=ExtResource("18_scatter")]
+
+[node name="Fort" parent="." instance=ExtResource("3_fort")]
+position = Vector3(0, 1.6, 0)
+
+[node name="Lanes" type="Node3D" parent="."]
+
+[node name="Lane0" type="Path3D" parent="Lanes"]
+curve = SubResource("Curve_lane0")
+script = ExtResource("4_lane")
+
+[node name="Lane1" type="Path3D" parent="Lanes"]
+curve = SubResource("Curve_lane1")
+script = ExtResource("4_lane")
+
+[node name="Lane2" type="Path3D" parent="Lanes"]
+curve = SubResource("Curve_lane2")
+script = ExtResource("4_lane")
+
+[node name="Ships" type="Node3D" parent="."]
+
+[node name="Projectiles" type="Node3D" parent="."]
+script = ExtResource("5_pool")
+splash_fx = ExtResource("13_splash")
+dust_fx = ExtResource("14_dust")
+
+[node name="Fx" type="Node3D" parent="."]
+
+[node name="WaveDirector" type="Node" parent="." node_paths=PackedStringArray("lanes_root", "ships_root")]
+script = ExtResource("6_director")
+waves = Array[ExtResource("15_wave_def")]([ExtResource("8_wave1"), ExtResource("9_wave2"), ExtResource("10_wave3"), ExtResource("19_wave4"), ExtResource("20_wave5"), ExtResource("21_wave6"), ExtResource("22_wave7"), ExtResource("23_wave8")])
+ship_scene = ExtResource("7_ship")
+lanes_root = NodePath("../Lanes")
+ships_root = NodePath("../Ships")
+
+[node name="Player" parent="." node_paths=PackedStringArray("guns_root", "ships_root") instance=ExtResource("11_player")]
+guns_root = NodePath("../Fort/GunPositions")
+ships_root = NodePath("../Ships")
+
+[node name="CameraBookmarks" type="Node3D" parent="."]
+
+[node name="overview" type="Marker3D" parent="CameraBookmarks"]
+position = Vector3(-60, 70, 120)
+rotation_degrees = Vector3(-9.3, -62.2, 0)
+
+[node name="fort" type="Marker3D" parent="CameraBookmarks"]
+position = Vector3(230, 25, 140)
+rotation_degrees = Vector3(-3.6, 58.7, 0)
+
+[node name="fort_close" type="Marker3D" parent="CameraBookmarks"]
+position = Vector3(125, 18, 95)
+rotation_degrees = Vector3(-6.5, 52, 0)
+
+[node name="town" type="Marker3D" parent="CameraBookmarks"]
+position = Vector3(150, 40, 300)
+rotation_degrees = Vector3(-6, 139.4, 0)
+
+[node name="lanes" type="Marker3D" parent="CameraBookmarks"]
+position = Vector3(300, 400, 300)
+rotation_degrees = Vector3(-48.5, -8.1, 0)
+
+[node name="Hud" parent="." node_paths=PackedStringArray("player", "director") instance=ExtResource("12_hud")]
+player = NodePath("../Player")
+director = NodePath("../WaveDirector")
+
+[node name="Menus" parent="." node_paths=PackedStringArray("player", "director") instance=ExtResource("24_menus")]
+player = NodePath("../Player")
+director = NodePath("../WaveDirector")

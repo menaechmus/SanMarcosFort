@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://game/player/player_controller.gd" id="1_player"]
+[ext_resource type="Script" path="res://game/player/aim_input.gd" id="2_input"]
+[ext_resource type="Script" path="res://game/player/camera_rig.gd" id="3_rig"]
+[ext_resource type="Script" path="res://game/player/aim_marker.gd" id="4_marker"]
+
+[sub_resource type="TorusMesh" id="Mesh_ring"]
+inner_radius = 0.8
+outer_radius = 1.0
+rings = 48
+ring_segments = 6
+
+[sub_resource type="CylinderMesh" id="Mesh_dot"]
+top_radius = 0.12
+bottom_radius = 0.12
+height = 0.05
+radial_segments = 12
+rings = 1
+
+[node name="Player" type="Node"]
+script = ExtResource("1_player")
+
+[node name="AimInput" type="Node" parent="."]
+script = ExtResource("2_input")
+
+[node name="CameraRig" type="Camera3D" parent="."]
+current = true
+fov = 55.0
+far = 9000.0
+script = ExtResource("3_rig")
+
+[node name="AimMarker" type="Node3D" parent="."]
+script = ExtResource("4_marker")
+
+[node name="Ring" type="MeshInstance3D" parent="AimMarker"]
+transform = Transform3D(1, 0, 0, 0, 0.15, 0, 0, 0, 1, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_ring")
+
+[node name="Dot" type="MeshInstance3D" parent="AimMarker"]
+cast_shadow = 0
+mesh = SubResource("Mesh_dot")
+
+[node name="LeadMarker" type="Node3D" parent="."]
+script = ExtResource("4_marker")
+lead = true
+
+[node name="Ring" type="MeshInstance3D" parent="LeadMarker"]
+transform = Transform3D(0.7, 0, 0, 0, 0.1, 0, 0, 0, 0.7, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_ring")
+
+[node name="Dot" type="MeshInstance3D" parent="LeadMarker"]
+cast_shadow = 0
+mesh = SubResource("Mesh_dot")

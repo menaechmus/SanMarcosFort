@@ -1,0 +1,227 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://game/ui/hud.gd" id="1_hud"]
+[ext_resource type="Theme" path="res://game/ui/theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://game/ui/safe_area.gd" id="3_safe"]
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("3_safe")
+
+[node name="Stats" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 424.0
+offset_bottom = 128.0
+mouse_filter = 2
+
+[node name="Wave" type="Label" parent="Root/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Wave 1"
+
+[node name="Score" type="Label" parent="Root/Stats"]
+layout_mode = 2
+text = "Score 0    Gold 0"
+
+[node name="Ships" type="Label" parent="Root/Stats"]
+layout_mode = 2
+text = "Sunk 0    Escaped 0"
+
+[node name="Bars" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -304.0
+offset_top = 18.0
+offset_right = -24.0
+offset_bottom = 150.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="FortLabel" type="Label" parent="Root/Bars"]
+layout_mode = 2
+text = "Castillo"
+
+[node name="FortBar" type="ProgressBar" parent="Root/Bars"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+
+[node name="TownLabel" type="Label" parent="Root/Bars"]
+layout_mode = 2
+text = "Damage to the town"
+
+[node name="TownBar" type="ProgressBar" parent="Root/Bars"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
+
+[node name="GunPanel" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -112.0
+offset_right = 504.0
+offset_bottom = -18.0
+grow_vertical = 0
+mouse_filter = 2
+alignment = 2
+
+[node name="AimHint" type="Label" parent="Root/GunPanel"]
+layout_mode = 2
+
+[node name="GunName" type="Label" parent="Root/GunPanel"]
+layout_mode = 2
+text = "East curtain"
+
+[node name="Ammo" type="Label" parent="Root/GunPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+text = "Round shot"
+
+[node name="Reload" type="ProgressBar" parent="Root/GunPanel"]
+custom_minimum_size = Vector2(260, 12)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+
+[node name="Banner" type="Label" parent="Root"]
+layout_mode = 1
+theme_type_variation = &"TitleLabel"
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 110.0
+offset_bottom = 220.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Pause" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -34.0
+offset_top = 14.0
+offset_right = 34.0
+offset_bottom = 60.0
+grow_horizontal = 2
+focus_mode = 0
+text = "II"
+
+[node name="Touch" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Fire" type="Button" parent="Root/Touch"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -196.0
+offset_top = -196.0
+offset_right = -32.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+action_mode = 0
+text = "FIRE"
+
+[node name="Spyglass" type="Button" parent="Root/Touch"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -196.0
+offset_top = -290.0
+offset_right = -32.0
+offset_bottom = -214.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+action_mode = 0
+text = "Spyglass"
+
+[node name="Ammo" type="Button" parent="Root/Touch"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -404.0
+offset_top = -196.0
+offset_right = -212.0
+offset_bottom = -122.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+action_mode = 0
+text = "Ammo"
+
+[node name="PrevGun" type="Button" parent="Root/Touch"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -404.0
+offset_top = -110.0
+offset_right = -308.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+action_mode = 0
+text = "◀ Gun"
+
+[node name="NextGun" type="Button" parent="Root/Touch"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -296.0
+offset_top = -110.0
+offset_right = -212.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+action_mode = 0
+text = "Gun ▶"

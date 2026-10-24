@@ -1,0 +1,102 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://game/fx/one_shot_fx.gd" id="1_fx"]
+
+[sub_resource type="Gradient" id="Grad_soft"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_soft"]
+gradient = SubResource("Grad_soft")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_spray"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("Tex_soft")
+billboard_mode = 3
+billboard_keep_scale = true
+roughness = 0.6
+
+[sub_resource type="QuadMesh" id="Mesh_spray"]
+material = SubResource("Mat_spray")
+size = Vector2(0.9, 0.9)
+
+[sub_resource type="Gradient" id="Grad_spray"]
+offsets = PackedFloat32Array(0, 0.7, 1)
+colors = PackedColorArray(0.95, 0.97, 0.98, 0.95, 0.9, 0.94, 0.95, 0.7, 0.9, 0.94, 0.95, 0)
+
+[sub_resource type="QuadMesh" id="Mesh_mist"]
+material = SubResource("Mat_spray")
+size = Vector2(2.4, 2.4)
+
+[sub_resource type="Gradient" id="Grad_mist"]
+offsets = PackedFloat32Array(0, 0.2, 1)
+colors = PackedColorArray(0.9, 0.93, 0.95, 0, 0.9, 0.93, 0.95, 0.5, 0.9, 0.93, 0.95, 0)
+
+[sub_resource type="Curve" id="Curve_grow"]
+_data = [Vector2(0, 0.5), 0.0, 1.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Splash" type="Node3D"]
+script = ExtResource("1_fx")
+lifetime = 4.0
+
+[node name="Column" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 60
+lifetime = 1.7
+one_shot = true
+explosiveness = 0.92
+mesh = SubResource("Mesh_spray")
+emission_shape = 1
+emission_sphere_radius = 0.6
+direction = Vector3(0, 1, 0)
+spread = 9.0
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 7.0
+initial_velocity_max = 15.0
+scale_amount_min = 0.7
+scale_amount_max = 1.9
+color_ramp = SubResource("Grad_spray")
+
+[node name="Ring" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 36
+lifetime = 1.2
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("Mesh_spray")
+direction = Vector3(0, 1, 0)
+spread = 70.0
+flatness = 0.6
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 6.0
+scale_amount_min = 0.6
+scale_amount_max = 1.2
+color_ramp = SubResource("Grad_spray")
+
+[node name="Mist" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 14
+lifetime = 2.8
+one_shot = true
+explosiveness = 0.9
+mesh = SubResource("Mesh_mist")
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(0, 1, 0)
+spread = 25.0
+gravity = Vector3(0.3, 0.2, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 4.0
+damping_min = 1.0
+damping_max = 2.0
+scale_amount_min = 1.0
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_grow")
+color_ramp = SubResource("Grad_mist")

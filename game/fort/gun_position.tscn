@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/fort/gun_position.gd" id="1_gun"]
+[ext_resource type="PackedScene" path="res://game/weapons/cannon.tscn" id="2_cannon"]
+
+[node name="GunPosition" type="Node3D"]
+script = ExtResource("1_gun")
+
+[node name="Cannon" parent="." instance=ExtResource("2_cannon")]
+
+[node name="CameraAnchor" type="Marker3D" parent="."]
+position = Vector3(0, 5.2, 7.5)
+rotation_degrees = Vector3(-10, 0, 0)

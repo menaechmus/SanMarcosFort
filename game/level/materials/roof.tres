@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/textures/brown_planks_03/brown_planks_03_albedo_1k.jpg" id="1_albedo"]
+
+[resource]
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.55, 0.42, 0.34, 1)
+albedo_texture = ExtResource("1_albedo")
+roughness = 0.9

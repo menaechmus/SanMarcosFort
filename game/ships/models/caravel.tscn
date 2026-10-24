@@ -1,0 +1,33 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/ships/caravel.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/common/material_setter.gd" id="2_setter"]
+[ext_resource type="Material" path="res://game/ships/materials/hull.tres" id="3_hull"]
+[ext_resource type="Material" path="res://game/ships/materials/hull_dark.tres" id="4_hull_dark"]
+[ext_resource type="Material" path="res://game/ships/materials/hull_paint_ochre.tres" id="5_hull_paint"]
+[ext_resource type="Material" path="res://game/ships/materials/deck.tres" id="6_deck"]
+[ext_resource type="Material" path="res://game/ships/materials/spar.tres" id="7_spar"]
+[ext_resource type="Material" path="res://game/ships/materials/sail.tres" id="8_sail"]
+[ext_resource type="Material" path="res://game/ships/materials/rope.tres" id="9_rope"]
+[ext_resource type="Material" path="res://game/ships/materials/flag_england.tres" id="10_flag"]
+[ext_resource type="Material" path="res://game/ships/materials/gold.tres" id="11_gold"]
+[ext_resource type="Material" path="res://game/common/materials/iron.tres" id="12_iron"]
+[ext_resource type="Material" path="res://game/fort/materials/opening.tres" id="13_opening"]
+
+[node name="Caravel" instance=ExtResource("1_model")]
+
+[node name="Materials" type="Node" parent="."]
+script = ExtResource("2_setter")
+materials = {
+"deck": ExtResource("6_deck"),
+"flag": ExtResource("10_flag"),
+"gold": ExtResource("11_gold"),
+"hull": ExtResource("3_hull"),
+"hull_dark": ExtResource("4_hull_dark"),
+"hull_paint": ExtResource("5_hull_paint"),
+"iron": ExtResource("12_iron"),
+"opening": ExtResource("13_opening"),
+"rope": ExtResource("9_rope"),
+"sail": ExtResource("8_sail"),
+"spar": ExtResource("7_spar")
+}

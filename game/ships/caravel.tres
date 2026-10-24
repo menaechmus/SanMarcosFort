@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ShipDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/ships/ship_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://game/ships/models/caravel.tscn" id="2_model"]
+
+[resource]
+script = ExtResource("1_def")
+display_name = "Caravel"
+model_scene = ExtResource("2_model")
+length = 24.0
+beam = 7.0
+draft = 2.3
+freeboard = 2.9
+mast_height = 18.0
+speed = 5.8
+max_hp = 6.0
+sink_time = 11.0
+wave_response = 2.6
+score = 250
+bounty = 45
+town_damage = 20.0
+guns_per_side = 5
+gun_range = 420.0
+gun_reload = 14.0

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WaveDef" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://game/level/wave_def.gd" id="1_def"]
+[ext_resource type="Script" path="res://game/level/wave_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://game/ships/pinnace.tres" id="3_pinnace"]
+
+[sub_resource type="Resource" id="Entry_0_pinnace"]
+script = ExtResource("2_entry")
+ship = ExtResource("3_pinnace")
+count = 5
+start_delay = 0.0
+interval = 10.0
+lanes = PackedInt32Array()
+speed_multiplier = 1.0
+armed = true
+
+[resource]
+script = ExtResource("1_def")
+title = "Pirate sloops"
+entries = Array[ExtResource("2_entry")]([SubResource("Entry_0_pinnace")])

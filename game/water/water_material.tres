@@ -1,0 +1,48 @@
+[gd_resource type="ShaderMaterial" load_steps=8 format=3]
+
+[ext_resource type="Shader" path="res://game/water/water.gdshader" id="1_shader"]
+
+[sub_resource type="FastNoiseLite" id="Noise_ripple_a"]
+noise_type = 1
+frequency = 0.02
+fractal_octaves = 4
+
+[sub_resource type="NoiseTexture2D" id="Tex_ripple_a"]
+width = 512
+height = 512
+seamless = true
+as_normal_map = true
+bump_strength = 3.0
+noise = SubResource("Noise_ripple_a")
+
+[sub_resource type="FastNoiseLite" id="Noise_ripple_b"]
+noise_type = 1
+seed = 7
+frequency = 0.035
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="Tex_ripple_b"]
+width = 256
+height = 256
+seamless = true
+as_normal_map = true
+bump_strength = 2.0
+noise = SubResource("Noise_ripple_b")
+
+[sub_resource type="FastNoiseLite" id="Noise_foam"]
+noise_type = 2
+seed = 3
+frequency = 0.03
+
+[sub_resource type="NoiseTexture2D" id="Tex_foam"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("Noise_foam")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/ripple_a = SubResource("Tex_ripple_a")
+shader_parameter/ripple_b = SubResource("Tex_ripple_b")
+shader_parameter/foam_noise = SubResource("Tex_foam")

@@ -1,0 +1,31 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://game/fort/fort.gd" id="1_fort"]
+[ext_resource type="PackedScene" path="res://assets/models/fort/fort.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://game/fort/gun_position.tscn" id="3_gun"]
+[ext_resource type="Material" path="res://game/fort/materials/coquina.tres" id="4_coquina"]
+[ext_resource type="Material" path="res://game/fort/materials/deck.tres" id="5_deck"]
+[ext_resource type="Material" path="res://game/fort/materials/garita.tres" id="6_garita"]
+[ext_resource type="Material" path="res://game/fort/materials/opening.tres" id="7_opening"]
+[ext_resource type="Material" path="res://game/common/materials/wood.tres" id="8_wood"]
+[ext_resource type="Material" path="res://game/level/materials/terrain_grounds.tres" id="9_grass"]
+[ext_resource type="Material" path="res://game/level/materials/terrain_moat.tres" id="10_moat"]
+[ext_resource type="PackedScene" path="res://game/fx/dust.tscn" id="11_dust"]
+
+[node name="Fort" type="Node3D"]
+script = ExtResource("1_fort")
+gun_scene = ExtResource("3_gun")
+dust_fx = ExtResource("11_dust")
+materials = {
+"coquina": ExtResource("4_coquina"),
+"deck": ExtResource("5_deck"),
+"garita": ExtResource("6_garita"),
+"grass": ExtResource("9_grass"),
+"moat": ExtResource("10_moat"),
+"opening": ExtResource("7_opening"),
+"wood": ExtResource("8_wood")
+}
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="GunPositions" type="Node3D" parent="."]

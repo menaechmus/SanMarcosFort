@@ -1,0 +1,70 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="San Marcos Fort"
+config/description="Man the cannons of the Castillo de San Marcos and sink the ships sailing past on Matanzas Bay."
+config/version="0.1.0"
+run/main_scene="res://game/level/main_level.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameClock="*res://game/autoload/game_clock.gd"
+Settings="*res://game/autoload/settings.gd"
+GameState="*res://game/autoload/game_state.gd"
+Audio="*res://game/autoload/audio.gd"
+DebugCli="*res://game/common/debug_cli.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+
+[layer_names]
+
+3d_physics/layer_1="terrain"
+3d_physics/layer_2="fort"
+3d_physics/layer_3="ships"
+
+[physics]
+
+3d/default_gravity=9.81
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+anti_aliasing/quality/msaa_3d=1
+
+[shader_globals]
+
+water_time={
+"type": "float",
+"value": 0.0
+}
+fort_plaster={
+"type": "float",
+"value": 0.0
+}

@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="WaveSet" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://game/water/wave_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://game/water/gerstner_wave.gd" id="2_wave"]
+
+[sub_resource type="Resource" id="Wave_swell"]
+script = ExtResource("2_wave")
+direction_deg = 195.0
+wavelength = 55.0
+steepness = 0.06
+
+[sub_resource type="Resource" id="Wave_chop_a"]
+script = ExtResource("2_wave")
+direction_deg = 222.0
+wavelength = 31.0
+steepness = 0.07
+
+[sub_resource type="Resource" id="Wave_chop_b"]
+script = ExtResource("2_wave")
+direction_deg = 168.0
+wavelength = 19.0
+steepness = 0.06
+
+[sub_resource type="Resource" id="Wave_ripple"]
+script = ExtResource("2_wave")
+direction_deg = 246.0
+wavelength = 13.0
+steepness = 0.05
+
+[resource]
+script = ExtResource("1_set")
+waves = Array[ExtResource("2_wave")]([SubResource("Wave_swell"), SubResource("Wave_chop_a"), SubResource("Wave_chop_b"), SubResource("Wave_ripple")])
+gravity = 9.81
+fade_center = Vector2(0, 0)
+fade_start = 1300.0
+fade_end = 2200.0
