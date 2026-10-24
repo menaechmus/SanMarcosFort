@@ -1,7 +1,8 @@
 class_name Cannon
 extends Node3D
 ## A muzzle-loading gun. Lays itself (traverse and elevation, at limited speed) toward an aim
-## point and fires once loaded and laid. Local -Z is the centre of its field of fire.
+## point and fires once loaded and laid. Local -Z is the centre of its field of fire. The gun
+## turns about this node's origin, the throat of its embrasure; the carriage stands behind it.
 
 signal fired(cannon: Cannon)
 
@@ -16,12 +17,16 @@ const FIRE_REQUEST_TIME := 1.5
 @export var reload_time: float = 3.5
 @export var traverse_speed_deg: float = 28.0
 @export var elevation_speed_deg: float = 10.0
-@export var min_elevation_deg: float = -7.0
+## The embrasure floors slope to clear the barrel and ball at this depression
+## (GUN_MIN_ELEVATION_DEG in tools/blender/build_fort.py).
+@export var min_elevation_deg: float = -5.0
 @export var max_elevation_deg: float = 12.0
-@export var yaw_limit_deg: float = 40.0
+## How far the gun can be laid either side of its embrasure's axis (GunPosition sets it).
+@export var yaw_limit_deg: float = 14.0
 @export var dispersion_deg: float = 0.1
-## Physics layers the shot can strike.
-@export_flags_3d_physics var shot_mask: int = 0b101
+## Physics layers the shot can strike. The fort is one of them, so a ball can never pass
+## through the fort's own masonry.
+@export_flags_3d_physics var shot_mask: int = 0b111
 @export var from_player: bool = true
 @export var muzzle_flash_fx: PackedScene
 @export var recoil_distance: float = 0.8
@@ -75,10 +80,18 @@ func pivot_position() -> Vector3:
 	return _pitch_pivot.global_position
 
 
+## Whether the gun can be laid on the bearing of a world point (range aside).
+func in_arc(point: Vector3) -> bool:
+	var local := global_transform.affine_inverse() * point
+	return absf(atan2(-local.x, -local.z)) <= deg_to_rad(yaw_limit_deg)
+
+
 ## Lays the gun toward a world point and returns whether it can hit it.
 func aim_at(point: Vector3) -> Aim:
 	var local := global_transform.affine_inverse() * point
-	var flat := Vector2(local.x, local.z).length()
+	# The shot's arc starts at the trunnions, which stand behind the turning point on the line
+	# of fire.
+	var flat := Vector2(local.x, local.z).length() + _pitch_pivot.position.z
 	var yaw := atan2(-local.x, -local.z)
 	var limit := deg_to_rad(yaw_limit_deg)
 	aim_state = Aim.READY
@@ -104,6 +117,15 @@ func aim_at(point: Vector3) -> Aim:
 ## Fires as soon as the gun is loaded and laid on a reachable point.
 func request_fire() -> void:
 	_fire_request = FIRE_REQUEST_TIME
+
+
+## Puts the gun in a pose at once, without traversing (tests use it). Angles in radians.
+func lay_now(yaw: float, pitch: float) -> void:
+	_yaw = yaw
+	_target_yaw = yaw
+	_pitch = pitch
+	_target_pitch = pitch
+	_apply_pose()
 
 
 func _process(delta: float) -> void:

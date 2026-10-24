@@ -7,12 +7,13 @@ extends Node
 ##                       `--` to measure the frame rate)
 ## --cam=<name>          view from a CameraBookmarks marker, or gun:<n> for gun position n
 ## --autoplay            a bot aims at the nearest ship and fires
-## --quit-after-sec=<s>  quit after s seconds of game time, printing a report
+## --quit-after-sec=<s>  quit after s seconds of game time, or at game over, printing a report
 ## --timescale=<x>       Engine.time_scale
 ## --shop                start a run with the shop open (with some gold), for screenshots
 ## --start               skip the title screen (without the autoplay bot)
 ## --wave=<n>            the first wave started is wave n
 ## --quality=<preset>    low, medium or high for this run (not saved)
+## A run with any of these options never saves a high score.
 
 ## Frames rendered before the frame-rate measurement starts (shader compiles, loading).
 const WARMUP_FRAMES := 60
@@ -33,6 +34,9 @@ func _ready() -> void:
 			continue
 		var parts := arg.substr(2).split("=", true, 1)
 		options[parts[0]] = parts[1] if parts.size() > 1 else "true"
+	# Bots and test setups must not set the player's high score.
+	if not options.is_empty():
+		GameState.persist = false
 	autoplay = options.has("autoplay")
 	_capture_frames = int(options.get("frames", "180"))
 	if options.has("timescale"):
@@ -48,10 +52,13 @@ func _ready() -> void:
 		GameState.phase_changed.connect(_autoplay_shop)
 
 
-## Autoplay in the shop: buy what the gold allows (cheapest useful first), repair, sail on.
+## Autoplay in the shop: log the wave just cleared, buy what the gold allows (cheapest useful
+## first), repair, sail on.
 func _autoplay_shop(phase: GameState.Phase) -> void:
 	if phase != GameState.Phase.SHOP:
 		return
+	print("[wave] %d cleared at %.0fs: sunk %d, escaped %d, town %.0f, fort %.0f" % [GameState.wave,
+		GameClock.time, GameState.ships_sunk, GameState.ships_escaped, GameState.town_damage, GameState.fort_hp])
 	if GameState.fort_hp < 70.0:
 		GameState.repair_fort()
 	for id: StringName in [&"reload", &"range", &"accuracy", &"gun", &"reload", &"range", &"accuracy", &"reload"]:
@@ -74,7 +81,9 @@ func _process(_delta: float) -> void:
 		_capture(options["capture"])
 		_print_stats()
 		_quit()
-	elif options.has("quit-after-sec") and GameClock.time >= float(options["quit-after-sec"]):
+	elif options.has("quit-after-sec") and (GameClock.time >= float(options["quit-after-sec"])
+			or GameState.phase == GameState.Phase.GAME_OVER):
+		# Game over pauses the clock, so it ends the run too.
 		_done = true
 		_quit()
 
@@ -105,9 +114,10 @@ func _print_stats() -> void:
 
 
 func _quit() -> void:
-	print("[report] time=%.1fs wave=%d score=%d sunk=%d escaped=%d shots=%d hits=%d town=%.0f fort=%.0f" % [
+	print("[report] time=%.1fs wave=%d score=%d sunk=%d escaped=%d shots=%d hits=%d town=%.0f fort=%.0f%s" % [
 		GameClock.time, GameState.wave, GameState.score, GameState.ships_sunk, GameState.ships_escaped,
-		GameState.shots_fired, GameState.shots_hit, GameState.town_damage, GameState.fort_hp])
+		GameState.shots_fired, GameState.shots_hit, GameState.town_damage, GameState.fort_hp,
+		" game over: " + GameState.end_reason if GameState.is_over else ""])
 	# The mixer drops stopped playbacks on its next pass (on the audio thread, so wait in real
 	# time) and the main loop frees them a frame later; quitting sooner reports them as leaked.
 	get_tree().paused = true

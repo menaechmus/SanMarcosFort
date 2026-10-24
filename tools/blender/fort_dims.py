@@ -68,10 +68,10 @@ CORDON_PROJECTION = 0.28
 # the base tapering to 9 ft at the top).
 TERREPLEIN = PARAPET_TOP - 2.0
 PARAPET_THICKNESS = ft(9, 0)
-# Embrasures: about 5'-1" wide (south elevation), cut down to sill height above the deck.
+# Embrasures: about 5'-1" wide (south elevation), splaying outward. Their floors are set by the
+# guns that fire through them (build_fort.embrasure_floor).
 EMBRASURE_INNER_WIDTH = ft(4, 0)
 EMBRASURE_OUTER_WIDTH = ft(6, 6)
-EMBRASURE_SILL = TERREPLEIN + 0.85
 
 # Grade around the fort and the floor of the court, above the moat floor (sheet 17).
 GRADE = 2.0

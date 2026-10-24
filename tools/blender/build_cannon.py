@@ -5,9 +5,11 @@ Headless:
             [--blend build/blend/cannon.blend] [--preview build/previews/cannon]
 
 Node hierarchy (what game/weapons/cannon.gd drives):
-    Yaw (turns the whole carriage)  -> Carriage mesh
-      Pitch (trunnion axis, 1.05 m up) -> Barrel mesh, Muzzle marker (2.3 m forward)
-Local -Z (Godot forward) is where the gun points. Materials: bronze, iron, wood, opening.
+    Yaw (the traverse point, at the embrasure throat) -> Carriage mesh (1.6 m behind it)
+      Pitch (trunnion axis, 1.05 m up, 1.6 m back) -> Barrel mesh, Muzzle marker (2.3 m forward)
+The gun turns about a point in front of its carriage, the way a gun was traversed by shifting its
+trail, so the barrel stays in the embrasure whichever way it is laid. Local -Z (Godot forward) is
+where the gun points. Materials: bronze, iron, wood, opening.
 """
 
 import argparse
@@ -22,6 +24,9 @@ import meshkit as mk  # noqa: E402
 
 TRUNNION_HEIGHT = 1.05
 MUZZLE = -2.3
+# How far the carriage (and the trunnions) stand behind the traverse point. The fort places that
+# point at the throat of the embrasure, so the muzzle reaches 0.7 m into the opening.
+CARRIAGE_BACK = 1.6
 SEGMENTS = 20
 
 # Barrel profile from the cascabel (+z, behind the trunnions) to the muzzle (-z):
@@ -34,6 +39,14 @@ PROFILE = [
     (-2.02, 0.158), (-2.06, 0.172), (-2.1, 0.168), (-2.2, 0.192), (-2.27, 0.2), (-2.3, 0.185),
 ]
 BORE_RADIUS = 0.065
+
+
+def barrel_radius(z: float) -> float:
+    """Outer radius of the barrel at z along its axis (PROFILE interpolated)."""
+    for (z0, r0), (z1, r1) in zip(PROFILE, PROFILE[1:]):
+        if z1 <= z <= z0:
+            return r0 + (r1 - r0) * (z0 - z) / (z0 - z1) if z0 != z1 else max(r0, r1)
+    return 0.0
 
 
 def lathe(mb, profile, mat, center=(0.0, 0.0, 0.0)):
@@ -158,11 +171,12 @@ def build() -> None:
     yaw = mk.empty("Yaw", (0.0, 0.0, 0.0))
     carriage_obj = carriage().build()
     carriage_obj.parent = yaw
-    pitch = mk.empty("Pitch", (0.0, TRUNNION_HEIGHT, 0.0), parent=yaw)
+    carriage_obj.location = mk.to_blender((0.0, 0.0, CARRIAGE_BACK))
+    pitch = mk.empty("Pitch", (0.0, TRUNNION_HEIGHT, CARRIAGE_BACK), parent=yaw)
     barrel_obj = barrel().build()
     barrel_obj.parent = pitch
     barrel_obj.location = (0.0, 0.0, 0.0)
-    pitch.location = mk.to_blender((0.0, TRUNNION_HEIGHT, 0.0))
+    pitch.location = mk.to_blender((0.0, TRUNNION_HEIGHT, CARRIAGE_BACK))
     muzzle = mk.empty("Muzzle", (0.0, 0.0, MUZZLE), parent=pitch)
     muzzle.location = mk.to_blender((0.0, 0.0, MUZZLE))
     # Barrel vertices are in its own frame (axis along -Z); the Pitch empty carries the height.
@@ -182,9 +196,9 @@ def main() -> int:
         mk.save_blend(os.path.abspath(args.blend))
     if args.preview:
         mk.render_views(os.path.abspath(args.preview), [
-            ("side", (4.2, 1.2, -0.8), (0.0, 0.8, -0.6), None),
-            ("front", (2.2, 2.0, -4.2), (0.0, 0.8, -0.6), None),
-            ("rear", (-2.4, 2.4, 3.2), (0.0, 0.8, -0.4), None),
+            ("side", (4.2, 1.2, 0.8), (0.0, 0.8, 1.0), None),
+            ("front", (2.2, 2.0, -2.6), (0.0, 0.8, 1.0), None),
+            ("rear", (-2.4, 2.4, 4.8), (0.0, 0.8, 1.2), None),
         ])
     return 0
 

@@ -6,8 +6,9 @@ Headless:
 
 Origin: centre of the court, moat floor at y = 0 (game axes, see meshkit.py). Material slot
 names are mapped to game materials by game/common/material_mapper.gd. Empties named Gun_*
-mark gun emplacements (their Godot -Z looks out through the embrasure). The node
-FortCollision-colonly becomes the fort's collision shape in Godot.
+mark gun emplacements: each sits at the throat of its embrasure, the point the gun turns about,
+and its Godot -Z looks out through the opening. The node FortCollision-colonly (walls and the
+parapet with its embrasures) becomes the fort's collision shape in Godot.
 """
 
 import argparse
@@ -20,6 +21,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy  # noqa: E402
 import fort_dims as D  # noqa: E402
 import meshkit as mk  # noqa: E402
+from build_cannon import CARRIAGE_BACK, PROFILE, TRUNNION_HEIGHT, barrel_radius  # noqa: E402
+
+# The guns' limits, mirrored from the game (min_elevation_deg in game/weapons/cannon.gd, the ball
+# in game/weapons/projectile_pool.gd): embrasure floors slope so a gun at full depression clears them.
+GUN_MIN_ELEVATION_DEG = -5.0
+BALL_RADIUS = 0.18
+# Room left between gun or ball and the masonry, metres.
+GUN_CLEARANCE = 0.04
 
 # Grounds plateau around the fort (x_min, x_max, z_min, z_max); the level terrain leaves it open.
 GROUNDS = (-110.0, 75.0, -125.0, 140.0)
@@ -210,18 +219,47 @@ def embrasure_sites(poly, keys):
     return sites
 
 
-def embrasure_cutter(site, index):
+def embrasure_floor():
+    """Heights above the deck of the embrasure floor at the throat (the parapet's inner face)
+    and at the mouth. The floor slopes with the bore at full depression, just below the barrel
+    (which turns about the throat) and then the ball."""
+    slope = math.tan(math.radians(-GUN_MIN_ELEVATION_DEG))
+    axis_at_throat = TRUNNION_HEIGHT - CARRIAGE_BACK * slope
+    # The thickest part of the barrel ahead of the throat, or the ball, whichever is bigger.
+    radii = [r for z, r in PROFILE if -z >= CARRIAGE_BACK] + [barrel_radius(-CARRIAGE_BACK)]
+    throat = axis_at_throat - max(radii + [BALL_RADIUS]) - GUN_CLEARANCE
+    return throat, throat - D.PARAPET_THICKNESS * slope
+
+
+def embrasure_arc_deg():
+    """How far a gun turning about the throat can be laid either side of the embrasure's axis
+    before its ball touches a cheek at the mouth (game/fort/gun_position.gd stays within it)."""
+    depth_in = D.PARAPET_THICKNESS + 0.6
+    w_in, w_out = D.EMBRASURE_INNER_WIDTH / 2, D.EMBRASURE_OUTER_WIDTH / 2
+    mouth = w_in + (w_out - w_in) * depth_in / (depth_in + 0.6)
+    return math.degrees(math.atan((mouth - BALL_RADIUS - GUN_CLEARANCE) / D.PARAPET_THICKNESS))
+
+
+def embrasure_cutter(site, index, floor):
+    """Solid that cuts one embrasure: the HABS splay in plan, open above, and a floor sloping down
+    toward the mouth (see embrasure_floor). It overruns both faces of the parapet by 0.6 m."""
     (px, pz), (nx, nz), _, _ = site
     tx, tz = -nz, nx
     depth_in = D.PARAPET_THICKNESS + 0.6
     w_in, w_out = D.EMBRASURE_INNER_WIDTH / 2, D.EMBRASURE_OUTER_WIDTH / 2
-    footprint = [(px - nx * depth_in + tx * w_in, pz - nz * depth_in + tz * w_in),
-                 (px + nx * 0.6 + tx * w_out, pz + nz * 0.6 + tz * w_out),
-                 (px + nx * 0.6 - tx * w_out, pz + nz * 0.6 - tz * w_out),
-                 (px - nx * depth_in - tx * w_in, pz - nz * depth_in - tz * w_in)]
+    throat, mouth = floor
+    slope = (throat - mouth) / D.PARAPET_THICKNESS
+
+    def corner(u, half_width, y):
+        # u: metres outward from the exterior line; y: height above the deck.
+        return (px + nx * u + tx * half_width, D.TERREPLEIN + y, pz + nz * u + tz * half_width)
+
+    bottom = [corner(-depth_in, w_in, mouth + slope * depth_in), corner(0.6, w_out, mouth - slope * 0.6),
+              corner(0.6, -w_out, mouth - slope * 0.6), corner(-depth_in, -w_in, mouth + slope * depth_in)]
+    top = [(x, D.PARAPET_TOP + 1.0, z) for x, _, z in bottom]
     mb = mk.MeshBuilder(f"Cutter{index}", WALL_UV)
     mb.color_fn = fort_color
-    mk.prism(mb, footprint, D.EMBRASURE_SILL, D.PARAPET_TOP + 1.0, "coquina", cap_bottom=True)
+    mk.solid(mb, bottom, top, "coquina")
     return mb.build()
 
 
@@ -406,15 +444,22 @@ def ray_to_polygon(origin, direction, poly):
     return best[1] if best else None
 
 
-def collision(poly, ravelin, scarp_line):
-    """Two simplified collision meshes: the walls (fort layer in the game: hits damage the
-    fort) and the moat floor plus grounds (terrain layer: hits only raise dust)."""
+def collision(poly, inner, ravelin, scarp_line, sites, floor):
+    """Two simplified collision meshes: the walls with the parapet and its embrasures (fort
+    layer in the game: hits damage the fort, and no ball passes through a merlon) and the moat
+    floor plus grounds (terrain layer: hits only raise dust)."""
     walls_mb = mk.MeshBuilder("FortCollision-colonly")
     base = mk.offset_polygon(poly, D.SCARP_TOP * D.SCARP_BATTER)
     rav_base = mk.offset_polygon(ravelin, 3.6 * D.SCARP_BATTER)
     mk.prism(walls_mb, base, -0.3, D.TERREPLEIN, "coquina")
     mk.prism(walls_mb, rav_base, -0.3, 4.4, "coquina")
-    walls_mb.build()
+    walls = walls_mb.build()
+    parapet_obj = parapet("ParapetCollision", poly, inner, D.SCARP_TOP + D.CORDON_HEIGHT,
+                          D.TERREPLEIN - 0.05, D.PARAPET_TOP, None).build()
+    mk.apply_boolean_difference(parapet_obj, [embrasure_cutter(s, i, floor) for i, s in enumerate(sites)])
+    with bpy.context.temp_override(active_object=walls, selected_editable_objects=[walls, parapet_obj],
+                                   selected_objects=[walls, parapet_obj]):
+        bpy.ops.object.join()
     ground_mb = mk.MeshBuilder("GroundsCollision-colonly")
     mk.cap(ground_mb, scarp_line, 0.0, "moat", holes=[base, rav_base])
     x0, x1, z0, z1 = GROUNDS
@@ -457,7 +502,8 @@ def build():
                   D.PARAPET_TOP, segments)
     parapet_obj = pmb.build()
     sites = embrasure_sites(poly, keys)
-    mk.apply_boolean_difference(parapet_obj, [embrasure_cutter(s, i) for i, s in enumerate(sites)])
+    floor = embrasure_floor()
+    mk.apply_boolean_difference(parapet_obj, [embrasure_cutter(s, i, floor) for i, s in enumerate(sites)])
 
     with bpy.context.temp_override(active_object=fort, selected_editable_objects=[fort, parapet_obj],
                                    selected_objects=[fort, parapet_obj]):
@@ -467,10 +513,13 @@ def build():
     for (key, index, name) in GUNS:
         site = next(s for s in sites if s[2] == key and s[3] == index)
         (px, pz), (nx, nz), _, _ = site
-        depth = D.PARAPET_THICKNESS + 1.6
+        # The throat: the middle of the embrasure at the parapet's inner face.
+        depth = D.PARAPET_THICKNESS
         mk.empty(name, (px - nx * depth, D.TERREPLEIN, pz - nz * depth), facing=(nx, nz))
-    collision(poly, ravelin, scarp_line)
+    collision(poly, inner, ravelin, scarp_line, sites, floor)
     print_summary(poly, salients, ravelin, fort)
+    print(f"[fort] embrasure floor {floor[0]:.2f} m above the deck at the throat, {floor[1]:.2f} m at "
+          f"the mouth; a gun turning at the throat can be laid {embrasure_arc_deg():.1f} deg either side")
 
 
 def print_summary(poly, salients, ravelin, fort):

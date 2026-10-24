@@ -354,6 +354,30 @@ def prism(mb: MeshBuilder, poly, y0: float, y1: float, mat: str, cap_bottom: boo
         cap(mb, poly, y0, mat, up=False)
 
 
+def solid(mb: MeshBuilder, bottom, top, mat: str) -> None:
+    """Closed convex solid between two rings of game-space points (same count and order), e.g. a
+    block with a sloping floor. Sides get UVs along the ring with v = height; both rings must be
+    planar. Every face points away from the centre."""
+    n = len(bottom)
+    centre = sum((Vector(p) for p in list(bottom) + list(top)), Vector()) / (2 * n)
+    s = 0.0
+    for i in range(n):
+        j = (i + 1) % n
+        a, b, c, d = bottom[i], bottom[j], top[j], top[i]
+        length = math.hypot(b[0] - a[0], b[2] - a[2])
+        uvs = [(s / mb.uv_scale, a[1] / mb.uv_scale), ((s + length) / mb.uv_scale, b[1] / mb.uv_scale),
+               ((s + length) / mb.uv_scale, c[1] / mb.uv_scale), (s / mb.uv_scale, d[1] / mb.uv_scale)]
+        mid = (Vector(a) + Vector(b) + Vector(c) + Vector(d)) / 4
+        mb.quad_facing(a, b, c, d, mid - centre, mat, uvs)
+        s += length
+    for ring in (bottom, top):
+        pts = list(ring)
+        mid = sum((Vector(p) for p in pts), Vector()) / n
+        if face_normal(pts).dot(mid - centre) < 0:
+            pts.reverse()
+        mb.face(pts, mat)
+
+
 def cylinder(mb: MeshBuilder, center, radius: float, y0: float, y1: float, mat: str,
              segments: int = 16, top: bool = True, radius_top: float = None) -> None:
     rt = radius if radius_top is None else radius_top

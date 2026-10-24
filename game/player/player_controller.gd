@@ -6,8 +6,12 @@ extends Node
 
 signal ammo_changed(ammo: AmmoDef)
 
-## Physics layers the pointer can rest on before reaching the water (terrain and fort).
-const POINTER_BLOCK_MASK := 0b11
+## Physics layers the pointer can rest on before reaching the water: terrain only. The fort's
+## own parapet stands in front of every gun and would otherwise catch the pointer.
+const POINTER_BLOCK_MASK := 0b01
+## How far the camera can look either side of the active gun's line, wider than the gun can be
+## laid, so ships can be watched coming before any gun bears on them.
+const LOOK_AROUND_DEG := 55.0
 const AMMO: Array[AmmoDef] = [
 	preload("res://game/weapons/round_shot.tres"),
 	preload("res://game/weapons/chain_shot.tres"),
@@ -66,7 +70,15 @@ func select_gun(index: int, instant: bool = false) -> void:
 	active_index = index
 	var gun := guns[index]
 	if not camera_locked:
-		rig.follow(gun.camera_anchor, deg_to_rad(gun.yaw_limit_deg + 15.0), instant)
+		rig.follow(gun.camera_anchor, deg_to_rad(LOOK_AROUND_DEG), instant)
+
+
+## Index of the first manned gun whose field of fire takes in `point`, or -1 if none does.
+func gun_that_bears(point: Vector3) -> int:
+	for i in guns.size():
+		if guns[i].cannon.in_arc(point):
+			return i
+	return -1
 
 
 func cycle_gun(step: int) -> void:
@@ -196,9 +208,9 @@ func _pointer_target(screen: Vector2) -> bool:
 	return true
 
 
-## Autoplay: lay the best-placed gun on the nearest sailing ship, leading its motion.
+## Autoplay: lay the best-placed gun on the nearest ship a gun can bear on, leading its motion.
 func _bot_aim() -> void:
-	var target := _nearest_ship()
+	var target := _bot_target()
 	if target == null:
 		aim_valid = false
 		return
@@ -221,9 +233,13 @@ func _bot_aim() -> void:
 		cannon.request_fire()
 
 
-func _nearest_ship() -> Ship:
+## The nearest sailing ship inside some gun's field of fire; failing that, the nearest one (the
+## guns lay toward it while it comes). Waiting on a ship no gun can reach would let others pass.
+func _bot_target() -> Ship:
 	var nearest: Ship = null
+	var nearest_in_reach: Ship = null
 	var best := INF
+	var best_in_reach := INF
 	var origin := active_gun().global_position
 	for child in ships_root.get_children():
 		var ship := child as Ship
@@ -233,7 +249,10 @@ func _nearest_ship() -> Ship:
 		if d < best:
 			best = d
 			nearest = ship
-	return nearest
+		if d < best_in_reach and gun_that_bears(ship.global_position) >= 0:
+			best_in_reach = d
+			nearest_in_reach = ship
+	return nearest_in_reach if nearest_in_reach != null else nearest
 
 
 func _on_cannon_fired(cannon: Cannon) -> void:

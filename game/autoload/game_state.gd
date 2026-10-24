@@ -28,6 +28,8 @@ var new_high_score: bool = false
 var autostart: bool = false
 ## Why the last run ended.
 var end_reason: String = ""
+## Whether the high score is written to disk (debug runs turn it off).
+var persist: bool = true
 var upgrades: Upgrades = Upgrades.new()
 var is_over: bool:
 	get:
@@ -160,6 +162,8 @@ func _load() -> void:
 
 
 func _save() -> void:
+	if not persist:
+		return
 	var cfg := ConfigFile.new()
 	cfg.load(SAVE_PATH)
 	cfg.set_value("records", "high_score", high_score)

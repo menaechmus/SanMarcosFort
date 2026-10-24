@@ -38,6 +38,9 @@ func _ready() -> void:
 
 func apply_hit(ammo: AmmoDef, _zone: StringName, point: Vector3, normal: Vector3, from_player: bool) -> void:
 	if from_player:
+		# Our own ball on our own walls: chips the stone, no harm done.
+		Fx.spawn(dust_fx, point, normal)
+		Audio.play_3d(&"stone_hit", point, -6.0)
 		return
 	GameState.damage_fort(HIT_DAMAGE * ammo.damage)
 	Fx.spawn(dust_fx, point, normal, 1.5)

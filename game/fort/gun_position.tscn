@@ -9,5 +9,5 @@ script = ExtResource("1_gun")
 [node name="Cannon" parent="." instance=ExtResource("2_cannon")]
 
 [node name="CameraAnchor" type="Marker3D" parent="."]
-position = Vector3(0, 5.2, 7.5)
+position = Vector3(0, 5.2, 9.1)
 rotation_degrees = Vector3(-10, 0, 0)

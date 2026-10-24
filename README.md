@@ -30,6 +30,11 @@ extra gun, and repairs. From wave 4, armed ships fire broadsides at the fort. A 
 sends its crew to cover for a few seconds. The run ends when the town has taken too much damage or
 the Castillo's walls fall. After wave 8 the last waves repeat with more and faster ships.
 
+Each gun fires through its own embrasure, which, as on the real fort, lets it swing only about 14°
+either way. The guns look out over different stretches of the bay (together about 60° to 123°
+from north), so switch guns as ships sail past: when you aim outside the current gun's field of
+fire, the hint above the gun's name tells you which gun can reach (press its number).
+
 Settings has graphics quality, aim assist (a marker showing where a ship will be when your shot
 arrives), volume, and the fort's look: today's bare coquina, or the Spanish colonial white plaster
 with red sentry boxes.

@@ -5,11 +5,11 @@ extends CanvasLayer
 
 signal pause_requested
 
+## Out of arc gets its own hint, naming a gun that can reach (see _out_of_arc_hint).
 const AIM_TEXT := {
 	Cannon.Aim.READY: "",
 	Cannon.Aim.OUT_OF_RANGE: "Out of range",
 	Cannon.Aim.TOO_CLOSE: "Too close: the gun can't depress that far",
-	Cannon.Aim.OUT_OF_ARC: "Outside this gun's field of fire",
 }
 const BANNER_TIME := 3.5
 
@@ -65,11 +65,24 @@ func _process(delta: float) -> void:
 	_reload.value = cannon.reload_fraction() * 100.0
 	if cannon.suppressed_left > 0.0:
 		_aim_hint.text = "The crew is taking cover!"
+	elif not player.aim_valid:
+		_aim_hint.text = ""
+	elif cannon.aim_state == Cannon.Aim.OUT_OF_ARC:
+		_aim_hint.text = _out_of_arc_hint()
 	else:
-		_aim_hint.text = AIM_TEXT.get(cannon.aim_state, "") if player.aim_valid else ""
+		_aim_hint.text = AIM_TEXT.get(cannon.aim_state, "")
 	if _banner_left > 0.0:
 		_banner_left -= delta
 		_banner.modulate.a = clampf(_banner_left / 0.6, 0.0, 1.0)
+
+
+## Each gun fires only through its own embrasure, so point the player at one that bears
+## (the number in brackets is its key).
+func _out_of_arc_hint() -> String:
+	var index := player.gun_that_bears(player.aim_point)
+	if index < 0:
+		return "Outside every gun's field of fire"
+	return "Outside this gun's field of fire: %s (%d) can reach it" % [player.guns[index].display_name, index + 1]
 
 
 func _on_phase(phase: GameState.Phase) -> void:
